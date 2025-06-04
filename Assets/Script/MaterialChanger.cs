@@ -6,37 +6,44 @@ public class MaterialChanger : MonoBehaviour, IPointerEnterHandler, IPointerExit
     public Material baseMaterial;
     public Material selectedMaterial;
     public AudioClip clip;
+    public Mesh[] shapes = new Mesh[2];
+
 
     public GameObject particle;
 
     [SerializeField] private Renderer renderer;
-    private AudioSource source;
+    [SerializeField] private AudioSource source;
+    private MeshFilter filter;
+    private int index = 0;
 
     void Start()
     {
         renderer = GetComponent<Renderer>();
         renderer.material = baseMaterial;
-
         source = GetComponent<AudioSource>();
-        source.PlayOneShot(clip);
+        filter.mesh = shapes[index];
+        filter = GetComponent<MeshFilter>();
     }
 
     public void OnPointerEnter(PointerEventData eventData)
     {
         renderer.material = selectedMaterial;
-        source.PlayOneShot(clip);
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
         renderer.material = baseMaterial;
-        source.PlayOneShot(clip);
     }
 
     public void OnPointerClick(PointerEventData eventData)
     {
         particle.SetActive(!particle.activeSelf);
         source.PlayOneShot(clip);
+        
+        if(++index > 1)
+            index = 0;
+        
+        filter.mesh = shapes[index];
     }
 
     void Update()
